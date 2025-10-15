@@ -50,10 +50,6 @@
     <small class="hint">本頁只負責送出設定；實際動作（保持秒數、定時等）回首頁詳細設定。</small>
   </div>
 
-  <div class="card">
-    <button class="btn" id="send">送出到裝置（Telegram WebApp）</button>
-  </div>
-
   <div id="tg_state" style="position:fixed;right:10px;bottom:10px;padding:6px 10px;border-radius:12px;background:#eee;font:12px/1.2 system-ui">檢查中…</div>
 
   <script>
@@ -128,5 +124,35 @@
     }
   })();
   </script>
+  <script>
+(function(){
+  // 讀取 ?cn0=...&ct1=HH:MM&chs=010101 參數，預填到表單
+  const qp = new URLSearchParams(location.search);
+
+  // #1 門檻
+  if (qp.has('cn0')) {
+    const v = parseInt(qp.get('cn0')||'0', 10);
+    const el = document.getElementById('cn0');
+    if (el) el.value = isNaN(v) ? 0 : Math.max(0, v);
+  }
+
+  // #2 時間
+  if (qp.has('ct1')) {
+    const t = (qp.get('ct1')||'').trim();
+    const el = document.getElementById('ct1');
+    if (el && /^(\d{1,2}):(\d{2})$/.test(t)) el.value = t;
+  }
+
+  // 六路開關
+  if (qp.has('chs')) {
+    const s = (qp.get('chs')||'').trim(); // 例如 "101001"
+    for (let i=0;i<6;i++){
+      const el = document.getElementById('ch'+i);
+      if (el && i < s.length) el.checked = (s[i] === '1');
+    }
+  }
+})();
+</script>
+
 </body>
 
