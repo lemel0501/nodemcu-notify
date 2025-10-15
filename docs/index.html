@@ -21,22 +21,27 @@
 
 <body>
   <!-- ① 定時排程：改為「單純滑動開關」做通路測試 -->
-  <div class="card">
-    <h3> 六路測試開關（僅測試路徑）</h3>
-    <small class="hint">只切換 ON / OFF，方便先驗證 Telegram → 裝置 的通路無誤。</small>
-    <div class="grid">
-      <label class="switch">CH1 <input id="ch0" type="checkbox"></label>
-      <label class="switch">CH2 <input id="ch1" type="checkbox"></label>
-      <label class="switch">CH3 <input id="ch2" type="checkbox"></label>
-      <label class="switch">CH4 <input id="ch3" type="checkbox"></label>
-      <label class="switch">CH5 <input id="ch4" type="checkbox"></label>
-      <label class="switch">CH6 <input id="ch5" type="checkbox"></label>
-    </div>
+<div class="card">
+  <h3>六路測試開關（僅測試路徑）</h3>
+  <small class="hint">只切換 ON / OFF，方便先驗證 Telegram → 裝置 的通路無誤。</small>
+  <div class="grid">
+    <label>CH1 <label class="switch"><input id="ch0" type="checkbox"><span class="slider"></span></label></label>
+    <label>CH2 <label class="switch"><input id="ch1" type="checkbox"><span class="slider"></span></label></label>
+    <label>CH3 <label class="switch"><input id="ch2" type="checkbox"><span class="slider"></span></label></label>
+    <label>CH4 <label class="switch"><input id="ch3" type="checkbox"><span class="slider"></span></label></label>
+    <label>CH5 <label class="switch"><input id="ch4" type="checkbox"><span class="slider"></span></label></label>
+    <label>CH6 <label class="switch"><input id="ch5" type="checkbox"><span class="slider"></span></label></label>
   </div>
+</div>
 
-  <!-- ② 計數器：#1 只改門檻；#2 只改每日時間 -->
-  <div class="card">
-    <h3> 工件計數設定</h3>
+<!-- 計數器 -->
+<div class="card">
+  <h3>工件計數設定</h3>
+  ...
+  <div style="margin-top:14px">
+    <button id="send" class="btn">送出設定</button>
+  </div>
+</div>
     <div class="row">
       <div>
         <label>#1 達標門檻（cn0，0=停用）</label>
