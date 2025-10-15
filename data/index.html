@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IoT 智慧監測控制系統</title>
+<style>
+  :root{
+    --ink:#0e2a1a;          /* 主字色 */
+    --muted:#54745f;        /* 次要字色 */
+    --bg1:#f6fff3;          /* 背景層 */
+    --bg2:#ffffff;          /* 卡片底色 */
+    --brand:#1e7f53;        /* 品牌色 */
+    --brand-weak:#1e7f531a; /* 品牌淡色 */
+    --ring:#1e7f5340;       /* 聚焦外框 */
+    --border:#0e2a1a22;     /* 邊框色 */
+    --shadow:0 10px 24px rgba(14,42,26,.10), 0 2px 8px rgba(14,42,26,.06);
+    --radius:16px;
+    --gap:14px;
+  }
+  html,body{height:100%}
+  body{
+    margin:0; padding:20px; line-height:1.6; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans TC", sans-serif;
+    color:var(--ink);
+    background: radial-gradient(1200px 800px at 10% -10%, #dfffe0, transparent 60%),
+                radial-gradient(1200px 800px at 110% 30%, #eaffd7, transparent 60%),
+                linear-gradient(180deg, #f9fff7 0%, #f4fff1 100%);
+  }
+  .container{max-width:1100px;margin:0 auto}
+  /* ── 頂部資訊列 ───────────────────────────────────────── */
+  .topbar{
+    position:sticky; top:0; z-index:20; margin:-10px -10px 16px; padding:14px 18px;
+    background: rgba(255,255,255,.75); backdrop-filter:saturate(140%) blur(6px);
+    border:1px solid var(--border); border-radius:12px; box-shadow: var(--shadow);
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .brand{display:flex; align-items:center; gap:10px}
+  .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#31b574,#1e7f53); box-shadow:inset 0 0 0 2px #fff8}
+  .title{margin:0}
+  .pills{display:flex; flex-wrap:wrap; gap:8px}
+  .pill{display:inline-flex; align-items:center; gap:6px; padding:.35rem .6rem; border-radius:999px;
+        background:var(--brand-weak); color:var(--ink); font-size:14px; border:1px solid var(--border)}
+  .code{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+
+  /* ── 卡片與表單 ───────────────────────────────────────── */
+  h2,h3,h4{margin:.2em 0 .5em}
+  h3{display:flex; align-items:center; gap:.5em}
+  .card{background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow)}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:var(--gap)}
+  .span-2{grid-column:1/-1}
+  label{display:block; margin:.3rem 0 .35rem; font-weight:600}
+  small{color:var(--muted)}
+  input,button,textarea,select{
+    font-size:16px; width:100%; box-sizing:border-box;
+    padding:10px 12px; border-radius:12px; border:1px solid var(--border);
+    background:#fff; color:var(--ink); outline:none;
+  }
+  input:focus, textarea:focus, select:focus{ box-shadow:0 0 0 3px var(--ring); border-color:var(--brand) }
+  .btn{ cursor:pointer; background:var(--brand); color:#fff; border:none; font-weight:700 }
+  .btn.ghost{ background:#fff; color:var(--brand); border:1px solid var(--brand) }
+  .btn:disabled{opacity:.6; cursor:not-allowed}
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
+  @media (max-width:860px){ .grid{grid-template-columns:1fr} .row2{grid-template-columns:1fr} }
+
+  /* 星期 checkbox → 膠囊按鈕 */
+  .weekday-wrap{ display:flex; flex-wrap:wrap; gap:10px }
+  .wbtn{ position:relative; display:inline-flex; align-items:center; gap:.5em; padding:.45rem .8rem; border-radius:999px; border:1px solid var(--border); background:#fff; user-select:none }
+  .wbtn input{ position:absolute; inset:0; opacity:0 }
+  .wbtn:has(input:checked){ background:var(--brand); color:#fff; border-color:transparent }
+
+  /* sticky 儲存列 */
+  .savebar{ position:sticky; bottom:0; z-index:10; margin-top:14px; }
+  .savebar .inner{ display:flex; gap:10px; justify-content:flex-end; align-items:center;
+    background: rgba(255,255,255,.85); border:1px solid var(--border); border-radius:12px; padding:10px; backdrop-filter: blur(6px); box-shadow: var(--shadow) }
+
+  /* 輕量表格兩欄：標籤+欄位 */
+  .twocol{ display:grid; grid-template-columns: 200px 1fr; gap:10px; align-items:center }
+  @media (max-width:680px){ .twocol{grid-template-columns:1fr} }
+
+  /* 細節微調 */
+  .muted{ color:var(--muted) }
+  hr{ border:0; border-top:1px dashed var(--border); margin:18px 0 }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar" role="banner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1 class="title">==IoT 智慧監測控制系統== </h1>
+          <div class="muted" style="font-size:13px">YQ IoT Notify</div>
+        </div>
+      </div>
+      <div class="pills">
+        <span class="pill">IP：<span class="code">{{IP}}</span></span>
+        <span class="pill">RTC：<span class="code" id="rtcSnap">{{NOW}}</span></span>
+      </div>
+    </div>
+
+    <!-- 儲存設定（POST /save） -->
+    <form method="POST" action="/save" id="mainForm" novalidate>
+
+      <!-- 只在 AP 模式顯示；STA 由下方腳本直接從 DOM 移除 -->
+      <section class="card secrets span-2" aria-label="Wi‑Fi 與 Telegram">
+        <h3>📶 Wi‑Fi / 🤖 Telegram</h3>
+        <div class="grid">
+          <div>
+            <label for="ssid">Wi‑Fi SSID</label>
+            <input id="ssid" name="ssid" value="{{SSID}}" autocomplete="off">
+            <label for="pass">Wi‑Fi Password</label>
+            <input id="pass" name="pass" value="{{PASS}}" autocomplete="off">
+          </div>
+          <div>
+            <label for="token">Telegram Bot Token</label>
+            <input id="token" name="token" value="{{TOKEN}}" autocomplete="off">
+            <label for="chat">Telegram Chat ID</label>
+            <input id="chat" name="chat" value="{{CHAT}}" autocomplete="off">
+            <label for="so">螢幕保護（秒，0=停用）(Optional)</label>
+            <input id="so" name="so" type="number" min="0" max="7200" value="{{SCREEN_OFF}}">
+          </div>
+        </div>
+      </section>
+
+      <!-- 有效星期 -->
+      <section class="card span-2">
+        <h3>📅 有效星期</h3>
+        <div class="weekday-wrap" role="group" aria-label="選擇要生效的星期幾">
+          <label class="wbtn"><input type="checkbox" name="wd0" {{WD0}}>週一</label>
+          <label class="wbtn"><input type="checkbox" name="wd1" {{WD1}}>週二</label>
+          <label class="wbtn"><input type="checkbox" name="wd2" {{WD2}}>週三</label>
+          <label class="wbtn"><input type="checkbox" name="wd3" {{WD3}}>週四</label>
+          <label class="wbtn"><input type="checkbox" name="wd4" {{WD4}}>週五</label>
+          <label class="wbtn"><input type="checkbox" name="wd5" {{WD5}}>週六</label>
+          <label class="wbtn"><input type="checkbox" name="wd6" {{WD6}}>週日</label>
+        </div>
+        <small>未勾選的日子，定時與「工件每日推播」都不會被啟動。</small>
+      </section>
+
+      <!-- 定時排程 -->
+      <section class="span-2">
+        <h3>⏱️ 定時排程設置</h3>
+        <div class="grid">
+          <!-- 6 路重複區塊：保留相同欄位名稱，不動後端 -->
+          <!-- CH1 -->
+          <div class="card">
+            <h4>第 1 路</h4>
+            <label>定時設定 (HH:MM)</label>
+            <input name="t0" inputmode="numeric" pattern="^\d{1,2}:\d{2}$" placeholder="08:30" value="{{T0}}">
+            <label>保持時間</label>
+            <div class="row2">
+              <div><input name="hm0" type="number" min="0" max="600" value="{{HM0}}"><small>分</small></div>
+              <div><input name="hs0" type="number" min="0" max="59"  value="{{HS0}}"><small>秒（最大 3600 秒）</small></div>
+            </div>
+            <label>推播訊息</label>
+            <input name="mon0" value="{{MON0}}">
+            <p><button class="btn" type="button" onclick="testRelay(0)">測試此路功能</button></p>
+          </div>
+          <!-- CH2 -->
+          <div class="card">
+            <h4>第 2 路</h4>
+            <label>定時設定 (HH:MM)</label>
+            <input name="t1" inputmode="numeric" pattern="^\d{1,2}:\d{2}$" placeholder="08:30" value="{{T1}}">
+            <label>保持時間</label>
+            <div class="row2">
+              <div><input name="hm1" type="number" min="0" max="600" value="{{HM1}}"><small>分</small></div>
+              <div><input name="hs1" type="number" min="0" max="59"  value="{{HS1}}"><small>秒（最大 3600 秒）</small></div>
+            </div>
+            <label>推播訊息</label>
+            <input name="mon1" value="{{MON1}}">
+            <p><button class="btn" type="button" onclick="testRelay(1)">測試此路功能</button></p>
+          </div>
+          <!-- CH3 -->
+          <div class="card">
+            <h4>第 3 路</h4>
+            <label>定時設定 (HH:MM)</label>
+            <input name="t2" inputmode="numeric" pattern="^\d{1,2}:\d{2}$" placeholder="08:30" value="{{T2}}">
+            <label>保持時間</label>
+            <div class="row2">
+              <div><input name="hm2" type="number" min="0" max="600" value="{{HM2}}"><small>分</small></div>
+              <div><input name="hs2" type="number" min="0" max="59"  value="{{HS2}}"><small>秒（最大 3600 秒）</small></div>
+            </div>
+            <label>推播訊息</label>
+            <input name="mon2" value="{{MON2}}">
+            <p><button class="btn" type="button" onclick="testRelay(2)">測試此路功能</button></p>
+          </div>
+          <!-- CH4 -->
+          <div class="card">
+            <h4>第 4 路</h4>
+            <label>定時設定 (HH:MM)</label>
+            <input name="t3" inputmode="numeric" pattern="^\d{1,2}:\d{2}$" placeholder="08:30" value="{{T3}}">
+            <label>保持時間</label>
+            <div class="row2">
+              <div><input name="hm3" type="number" min="0" max="600" value="{{HM3}}"><small>分</small></div>
+              <div><input name="hs3" type="number" min="0" max="59"  value="{{HS3}}"><small>秒（最大 3600 秒）</small></div>
+            </div>
+            <label>推播訊息</label>
+            <input name="mon3" value="{{MON3}}">
+            <p><button class="btn" type="button" onclick="testRelay(3)">測試此路功能</button></p>
+          </div>
+          <!-- CH5 -->
+          <div class="card">
+            <h4>第 5 路</h4>
+            <label>定時設定 (HH:MM)</label>
+            <input name="t4" inputmode="numeric" pattern="^\d{1,2}:\d{2}$" placeholder="08:30" value="{{T4}}">
+            <label>保持時間</label>
+            <div class="row2">
+              <div><input name="hm4" type="number" min="0" max="600" value="{{HM4}}"><small>分</small></div>
+              <div><input name="hs4" type="number" min="0" max="59"  value="{{HS4}}"><small>秒（最大 3600 秒）</small></div>
+            </div>
+            <label>推播訊息</label>
+            <input name="mon4" value="{{MON4}}">
+            <p><button class="btn" type="button" onclick="testRelay(4)">測試此路功能</button></p>
+          </div>
+          <!-- CH6 -->
+          <div class="card">
+            <h4>第 6 路</h4>
+            <label>定時設定 (HH:MM)</label>
+            <input name="t5" inputmode="numeric" pattern="^\d{1,2}:\d{2}$" placeholder="08:30" value="{{T5}}">
+            <label>保持時間</label>
+            <div class="row2">
+              <div><input name="hm5" type="number" min="0" max="600" value="{{HM5}}"><small>分</small></div>
+              <div><input name="hs5" type="number" min="0" max="59"  value="{{HS5}}"><small>秒（最大 3600 秒）</small></div>
+            </div>
+            <label>推播訊息</label>
+            <input name="mon5" value="{{MON5}}">
+            <p><button class="btn" type="button" onclick="testRelay(5)">測試此路功能</button></p>
+          </div>
+
+          <!-- 異常推播：說明卡片 -->
+          <div class="card span-2">
+            <h3>⚠️ 異常推播訊息設置</h3>
+            <small>說明：訊號的有效沿（由 OFF 轉為 ON）為推播事件的觸發條件，持續 ON 狀態不重複觸發。</small>
+          </div>
+
+          <!-- 6 路異常推播訊息欄位（保留名稱） -->
+          <div class="card"><h4>第一路</h4><label>推播訊息</label><input name="am0" value="{{AM0}}"></div>
+          <div class="card"><h4>第二路</h4><label>推播訊息</label><input name="am1" value="{{AM1}}"></div>
+          <div class="card"><h4>第三路</h4><label>推播訊息</label><input name="am2" value="{{AM2}}"></div>
+          <div class="card"><h4>第四路</h4><label>推播訊息</label><input name="am3" value="{{AM3}}"></div>
+          <div class="card"><h4>第五路</h4><label>推播訊息</label><input name="am4" value="{{AM4}}"></div>
+          <div class="card"><h4>第六路</h4><label>推播訊息</label><input name="am5" value="{{AM5}}"></div>
+        </div>
+      </section>
+
+      <!-- 工件計數：兩組 -->
+      <section class="span-2">
+        <div class="card span-2" style="margin-bottom:var(--gap)">
+          <h3>🧮 計數器模式</h3>
+          <small>每觸發一次即 +1，推播後自動清零。(數量為0則不推播)</small>
+        </div>
+        <div class="grid">
+<!-- 計數器 #1（新增達標門檻欄位） -->
+<div class="card">
+  <h4>計數器 #1</h4>
+  <label>推播訊息</label>
+  <input name="cm0" value="{{CM0}}">
+
+  <!-- ★ 新增：達標門檻 -->
+  <label>達標門檻（件數，0=停用達標模式）</label>
+  <input name="cn0" type="number" min="0" step="1" value="{{CN0}}">
+  <small class="muted">>0 時：計數器採「達標即推播」模式，不做每日時間回報。</small>
+
+  <p><button class="btn ghost" type="button" onclick="resetCnt(0)">手動清零</button></p>
+</div>
+
+          <div class="card">
+            <h4>計數器 #2</h4>
+            <label>定時每日推播時間 (HH:MM)</label>
+            <input name="ct1" inputmode="numeric" pattern="^\d{1,2}:\d{2}$" placeholder="17:30" value="{{CT1}}">
+            <label>推播訊息</label>
+            <input name="cm1" value="{{CM1}}">
+            <p><button class="btn ghost" type="button" onclick="resetCnt(1)">手動清零</button></p>
+          </div>
+        </div>
+      </section>
+        <div class="savebar">
+          <div class="inner">
+            <button class="btn" type="submit">💾 儲存設定</button>
+          </div>
+        </div>
+      </section>
+    </form>
+
+    <hr>
+
+    <!-- 校時（POST /set-time） -->
+    <section class="card span-2" aria-label="自動校時">
+      <h3>🕒 自動校時</h3>
+      <form method="POST" action="/set-time" class="twocol">
+        <label for="when">現在時間（YYYY-MM-DD HH:MM）</label>
+        <div style="display:flex; gap:10px; align-items:center">
+          <input id="when" name="when" value="{{NOW}}">
+          <button class="btn" type="submit">寫入時鐘</button>
+          <button class="btn ghost" type="button" id="snapNow">套用此刻</button>
+        </div>
+      </form>
+      <p class="muted" style="margin:.6rem 0 0">注意:有備份電池才會在斷電時持續走時。</p>
+    </section>
+  </div>
+
+<script>
+async function testRelay(ch){
+  try{
+    const r = await fetch('/test-relay?ch='+ch);
+    const t = await r.text();
+    alert(t);
+  }catch(e){ alert('測試失敗：'+e); }
+}
+async function resetCnt(ch){
+  try{
+    const r = await fetch('/count-reset?ch='+ch, {method:'POST'});
+    const t = await r.text();
+    alert('計數器 #'+(ch+1)+' 已清零：'+t);
+  }catch(e){ alert('清零失敗：'+e); }
+}
+// AP/STA：只在 AP 模式顯示機敏區塊
+(function(){
+  var show = '{{SHOW_SECRETS}}' === '1';
+  document.querySelectorAll('.secrets').forEach(function(card){ if(!show) card.remove(); });
+})();
+// 校時：把此刻時間套入輸入框
+(function(){
+  const btn = document.getElementById('snapNow');
+  if(!btn) return;
+  btn.addEventListener('click', function(){
+    const d = new Date();
+    const pad = n=> String(n).padStart(2,'0');
+    const v = d.getFullYear()+ '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    const inp = document.getElementById('when');
+    if (inp) inp.value = v;
+    const rtc = document.getElementById('rtcSnap');
+    if (rtc) rtc.textContent = v;
+  });
+})();
+// 簡易 HH:MM 自動補零（不更動後端欄位名稱）
+(function(){
+  document.querySelectorAll('input[pattern^="^\\d"]').forEach(function(inp){
+    inp.addEventListener('blur', function(){
+      let s = (inp.value||'').trim();
+      if(!s) return;
+      const m = s.match(/^(\d{1,2}):(\d{1,2})$/);
+      if(!m) return; // 交給後端驗證
+      let h = Math.min(23, Math.max(0, Number(m[1])));
+      let mm = Math.min(59, Math.max(0, Number(m[2])));
+      inp.value = String(h).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+    });
+  });
+})();
+</script>
+</body>
+</html>
