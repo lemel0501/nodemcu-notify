@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>YQ Notify ¡¤ WebApp</title>
+<title>YQ Notify Â· WebApp</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
@@ -20,10 +20,10 @@
 </style>
 
 <body>
-  <!-- ¢Ù ¶¨•rÅÅ³Ì£º¸Äé¡¸†Î¼ƒ»¬„Óé_êP¡¹×öÍ¨Â·œyÔ‡ -->
+  <!-- â‘  å®šæ™‚æ’ç¨‹ï¼šæ”¹ç‚ºã€Œå–®ç´”æ»‘å‹•é–‹é—œã€åšé€šè·¯æ¸¬è©¦ -->
   <div class="card">
-    <h3>??? ÁùÂ·œyÔ‡é_êP£¨ƒHœyÔ‡Â·½£©</h3>
-    <small class="hint">Ö»ÇĞ“Q ON / OFF£¬·½±ãÏÈò×C Telegram ¡ú ÑbÖÃ µÄÍ¨Â·ŸoÕ`¡£</small>
+    <h3> å…­è·¯æ¸¬è©¦é–‹é—œï¼ˆåƒ…æ¸¬è©¦è·¯å¾‘ï¼‰</h3>
+    <small class="hint">åªåˆ‡æ› ON / OFFï¼Œæ–¹ä¾¿å…ˆé©—è­‰ Telegram â†’ è£ç½® çš„é€šè·¯ç„¡èª¤ã€‚</small>
     <div class="grid">
       <label class="switch">CH1 <input id="ch0" type="checkbox"></label>
       <label class="switch">CH2 <input id="ch1" type="checkbox"></label>
@@ -34,37 +34,37 @@
     </div>
   </div>
 
-  <!-- ¢Ú Ó‹”µÆ÷£º#1 Ö»¸ÄéT™‘£»#2 Ö»¸ÄÃ¿ÈÕ•rég -->
+  <!-- â‘¡ è¨ˆæ•¸å™¨ï¼š#1 åªæ”¹é–€æª»ï¼›#2 åªæ”¹æ¯æ—¥æ™‚é–“ -->
   <div class="card">
-    <h3>?? ¹¤¼şÓ‹”µ</h3>
+    <h3> å·¥ä»¶è¨ˆæ•¸è¨­å®š</h3>
     <div class="row">
       <div>
-        <label>#1 ß_˜ËéT™‘£¨cn0£¬0=Í£ÓÃ£©</label>
+        <label>#1 é”æ¨™é–€æª»ï¼ˆcn0ï¼Œ0=åœç”¨ï¼‰</label>
         <input id="cn0" type="number" min="0" step="1" value="0" inputmode="numeric">
       </div>
       <div>
-        <label>#2 Ã¿ÈÕÍÆ²¥•rég£¨ct1£¬HH:MM£©</label>
+        <label>#2 æ¯æ—¥æ¨æ’­æ™‚é–“ï¼ˆct1ï¼ŒHH:MMï¼‰</label>
         <input id="ct1" placeholder="17:30" inputmode="numeric">
       </div>
     </div>
-    <small class="hint">±¾í“Ö»Ø“ØŸËÍ³öÔO¶¨£»ŒëH„Ó×÷£¨±£³ÖÃë”µ¡¢¶¨•rµÈ£©Ö®ááÔÙ»Ø main.cpp ƒÈ²¿ÂäŒ¡£</small>
+    <small class="hint">æœ¬é åªè² è²¬é€å‡ºè¨­å®šï¼›å¯¦éš›å‹•ä½œï¼ˆä¿æŒç§’æ•¸ã€å®šæ™‚ç­‰ï¼‰å›é¦–é è©³ç´°è¨­å®šã€‚</small>
   </div>
 
   <div class="card">
-    <button class="btn" id="send">ËÍ³öµ½ÑbÖÃ£¨Telegram WebApp£©</button>
+    <button class="btn" id="send">é€å‡ºåˆ°è£ç½®ï¼ˆTelegram WebAppï¼‰</button>
   </div>
 
-  <div id="tg_state" style="position:fixed;right:10px;bottom:10px;padding:6px 10px;border-radius:12px;background:#eee;font:12px/1.2 system-ui">™z²éÖĞ¡­</div>
+  <div id="tg_state" style="position:fixed;right:10px;bottom:10px;padding:6px 10px;border-radius:12px;background:#eee;font:12px/1.2 system-ui">æª¢æŸ¥ä¸­â€¦</div>
 
   <script>
   (function(){
     const s = document.getElementById('tg_state');
     const tg = window.Telegram && window.Telegram.WebApp;
-    if (!tg) { s.textContent = '? ·Ç Telegram WebApp'; s.style.background = '#ffd7d7'; return; }
-    if (!tg.sendData){ s.textContent = '? WebApp Ÿo sendData£¨Íâ²¿é_†¢£©'; s.style.background = '#ffd7d7'; return; }
+    if (!tg) { s.textContent = '? é Telegram WebApp'; s.style.background = '#ffd7d7'; return; }
+    if (!tg.sendData){ s.textContent = '? WebApp ç„¡ sendDataï¼ˆå¤–éƒ¨é–‹å•Ÿï¼‰'; s.style.background = '#ffd7d7'; return; }
     tg.ready && tg.ready();
     tg.expand && tg.expand();
-    s.textContent = '? Telegram WebApp ¾Í¾w';
+    s.textContent = '? Telegram WebApp å°±ç·’';
     s.style.background = '#d7ffd7';
   })();
   </script>
@@ -74,7 +74,7 @@
     const tg = window.Telegram && window.Telegram.WebApp;
 
     function validHHMM(v){
-      // ÔÊÔS¿Õ×Ö´®£¨±íÊ¾²»†¢ÓÃ£©£¬»ò HH:MM£¨00-23:00-59£©
+      // å…è¨±ç©ºå­—ä¸²ï¼ˆè¡¨ç¤ºä¸å•Ÿç”¨ï¼‰ï¼Œæˆ– HH:MMï¼ˆ00-23:00-59ï¼‰
       if (!v) return true;
       const m = /^(\d{1,2}):(\d{2})$/.exec(v.trim());
       if (!m) return false;
@@ -83,46 +83,46 @@
     }
 
     function collect(){
-      // ÁùÂ·²¼ÁÖ
+      // å…­è·¯å¸ƒæ—
       const chs = [];
       for (let i=0;i<6;i++){
         chs.push( document.getElementById('ch'+i).checked ? 1 : 0 );
       }
-      // #1 éT™‘
+      // #1 é–€æª»
       let cn0 = parseInt(document.getElementById('cn0').value||'0',10);
       if (isNaN(cn0) || cn0<0) cn0 = 0;
 
-      // #2 •rég
+      // #2 æ™‚é–“
       const ct1 = (document.getElementById('ct1').value||'').trim();
       if (!validHHMM(ct1)){
-        alert('Õˆİ”ÈëÕı´_µÄ #2 Ã¿ÈÕÍÆ²¥•rég£¨¸ñÊ½ HH:MM£¬ÀıÈç 17:30£©£¬»òÁô°×Í£ÓÃ¡£');
+        alert('è«‹è¼¸å…¥æ­£ç¢ºçš„ #2 æ¯æ—¥æ¨æ’­æ™‚é–“ï¼ˆæ ¼å¼ HH:MMï¼Œä¾‹å¦‚ 17:30ï¼‰ï¼Œæˆ–ç•™ç™½åœç”¨ã€‚');
         throw new Error('bad time');
       }
 
-      // ¡ª¡ª ×îĞ¡¿ÉÓÃ schema ¡ª¡ª //
+      // â€”â€” æœ€å°å¯ç”¨ schema â€”â€” //
       return { chs, cn0, ct1 };
     }
 
-    // ËÍ³ö
+    // é€å‡º
     const btn = document.getElementById('send');
     btn.addEventListener('click', ()=>{
       if (!(tg && tg.sendData)){
-        alert('ÕˆÄ Telegram ƒÈé_†¢´Ëí“£¨ücÁÄÌìÑeµÄ¡¸?? é_†¢ÔO¶¨¡¹£©¡£Íâ²¿gÓ[Æ÷Ÿo·¨ËÍ³ö¡£');
+        alert('è«‹å¾ Telegram å…§é–‹å•Ÿæ­¤é ï¼ˆé»èŠå¤©è£¡çš„ã€Œ?? é–‹å•Ÿè¨­å®šã€ï¼‰ã€‚å¤–éƒ¨ç€è¦½å™¨ç„¡æ³•é€å‡ºã€‚');
         return;
       }
       let payload;
       try{ payload = collect(); }catch(e){ return; }
 
-      // ÓÃÒ»ÖÂ¸ñÊ½ËÍ³ö£ºtype + payload
+      // ç”¨ä¸€è‡´æ ¼å¼é€å‡ºï¼štype + payload
       const packet = { type: "save_config", payload, version: 2 };
-      tg.showAlert && tg.showAlert('ÔO¶¨ÒÑËÍ³ö£¬ÑbÖÃŒ¢Ì×ÓÃ¡£');
+      tg.showAlert && tg.showAlert('è¨­å®šå·²é€å‡ºï¼Œè£ç½®å°‡å¥—ç”¨ã€‚');
       tg.sendData(JSON.stringify(packet));
       tg.close && tg.close();
     });
 
-    // ¿Éßx£ºµ×²¿Ö÷°´âo
+    // å¯é¸ï¼šåº•éƒ¨ä¸»æŒ‰éˆ•
     if (tg && tg.MainButton){
-      tg.MainButton.setText('ËÍ³öµ½ÑbÖÃ');
+      tg.MainButton.setText('é€å‡ºåˆ°è£ç½®');
       tg.MainButton.onClick(()=>btn.click());
       tg.MainButton.show();
     }
