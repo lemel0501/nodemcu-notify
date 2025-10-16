@@ -57,6 +57,40 @@
 
 <script>
 (function(){
+  const qs = new URLSearchParams(location.search);
+  const dev = qs.get('dev');        // 由 webappUrlWithState() 注入的 http://<裝置IP>
+  const $ = (sel)=>document.querySelector(sel);
+
+  // 這兩個是你的欄位 id/name（依你頁面實際 id 調整）
+  const elCn0 = document.getElementById('cn0');
+  const elCt1 = document.getElementById('ct1');  // HH:MM 的輸入框
+  const badge  = document.getElementById('syncBadge'); // 顯示「已同步/同步失敗」的小標籤
+
+  async function syncFromDevice(){
+    if(!dev) { badge && (badge.textContent='同步失敗（缺 dev 參數）'); return; }
+    try{
+      // 先打本機裝置 API 取最新值
+      const resp = await fetch(dev + '/webapp-export', { method:'GET' });
+      if(!resp.ok) throw new Error('HTTP '+resp.status);
+      const j = await resp.json();   // 例如：{cn0: 88, ct1:"21:18", chs:"010101"}
+
+      // 寫回表單（依你的實際欄位改這裡）
+      if (elCn0) elCn0.value = j.cn0 ?? elCn0.value;
+      if (elCt1) elCt1.value = j.ct1 ?? elCt1.value;
+
+      // 顯示同步成功
+      badge && (badge.textContent = '已同步（即時）');
+    }catch(e){
+      // 失敗就維持原本 URL 參數填入的舊值，並提示
+      badge && (badge.textContent = '同步失敗（使用 URL 參數）');
+      console.warn('syncFromDevice fail:', e);
+    }
+  }
+
+  // 頁面載入就先同步一次，再讓使用者操作
+  window.addEventListener('DOMContentLoaded', syncFromDevice);
+})();
+(function(){
   const tg = window.Telegram && window.Telegram.WebApp;
 
   // ===== 驗證 HH:MM =====
