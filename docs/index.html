@@ -59,20 +59,25 @@
 (function(){
   const tg = window.Telegram && window.Telegram.WebApp;
 
+  // ===== 驗證 HH:MM =====
   function validHHMM(v){
     if(!v) return true;
     const m = /^(\d{1,2}):(\d{2})$/.exec(v.trim()); if(!m) return false;
     const hh=+m[1], mm=+m[2]; return hh>=0&&hh<=23&&mm>=0&&mm<=59;
   }
 
+  // ===== 收集目前畫面設定 =====
   function collect(){
-    const chs=[]; for(let i=0;i<6;i++) chs.push(document.getElementById('ch'+i).checked?1:0);
-    let cn0 = parseInt(document.getElementById('cn0').value||'0',10); if(isNaN(cn0)||cn0<0) cn0=0;
+    const chs=[]; 
+    for(let i=0;i<6;i++) chs.push(document.getElementById('ch'+i).checked?1:0);
+    let cn0 = parseInt(document.getElementById('cn0').value||'0',10); 
+    if(isNaN(cn0)||cn0<0) cn0=0;
     const ct1=(document.getElementById('ct1').value||'').trim();
     if(!validHHMM(ct1)){ alert('請輸入 HH:MM 或留白'); throw new Error('bad time'); }
     return { chs, cn0, ct1 };
   }
 
+  // ===== 傳送設定到裝置 =====
   function doSend(){
     if(!(tg && tg.sendData)){ alert('請從 Telegram 內開啟此頁'); return; }
     let payload; try{ payload = collect(); }catch(e){ return; }
@@ -82,14 +87,14 @@
     tg.close && tg.close();
   }
 
-  // 只使用 Telegram 預設 MainButton
+  // ===== 設定 Telegram 主按鈕或本地備援按鈕 =====
   if(tg && tg.MainButton){
-    tg.ready && tg.ready(); tg.expand && tg.expand();
+    tg.ready && tg.ready(); 
+    tg.expand && tg.expand();
     tg.MainButton.setText('送出到裝置');
     tg.MainButton.onClick(doSend);
     tg.MainButton.show();
   } else {
-    // 非 Telegram 情況：顯示備援按鈕
     const btn = document.createElement('button');
     btn.textContent = '送出設定';
     btn.className = 'btn';
@@ -98,19 +103,61 @@
     document.querySelector('.card:last-of-type').appendChild(btn);
   }
 
-  // 預填：從 URL 讀回狀態與名稱 n0..n5
+  // ===== 從 URL 預填狀態 =====
   const qp = new URLSearchParams(location.search);
   if (qp.has('cn0')) document.getElementById('cn0').value = Math.max(0, parseInt(qp.get('cn0')||'0',10));
   if (qp.has('ct1')) document.getElementById('ct1').value = (qp.get('ct1')||'').trim();
   if (qp.has('chs')) {
     const s = (qp.get('chs')||'').trim();
-    for(let i=0;i<6;i++){ const el=document.getElementById('ch'+i); if(el && i<s.length) el.checked = (s[i]==='1'); }
+    for(let i=0;i<6;i++){
+      const el=document.getElementById('ch'+i);
+      if(el && i<s.length) el.checked = (s[i]==='1');
+    }
   }
   for(let i=0;i<6;i++){
-    const key='n'+i; if(qp.has(key)){ const t=(qp.get(key)||'').trim(); if(t) document.getElementById(key).textContent=t; }
+    const key='n'+i;
+    if(qp.has(key)){
+      const t=(qp.get(key)||'').trim();
+      if(t) document.getElementById(key).textContent=t;
+    }
   }
+
+  // ===== 新增：從裝置即時同步最新設定 =====
+  async function fetchLiveIfAny(){
+    const dev = qp.get('dev'); // e.g. http://192.168.1.120
+    if(!dev) return;
+    try{
+      const res = await fetch(dev.replace(/\/$/,'') + '/webapp-export', { mode:'cors' });
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const j = await res.json();
+
+      // 覆蓋欄位
+      if (j.cn0 != null)
+        document.getElementById('cn0').value = Math.max(0, parseInt(j.cn0,10)||0);
+      if (j.ct1)
+        document.getElementById('ct1').value = (j.ct1||'').trim();
+      if (typeof j.chs === 'string'){
+        for(let i=0;i<6;i++){
+          const el = document.getElementById('ch'+i);
+          if (el && i<j.chs.length)
+            el.checked = (j.chs[i]==='1');
+        }
+      }
+      const s = document.getElementById('tg_state');
+      if (s) s.textContent = '✅ 已從裝置同步最新設定';
+      console.log('live config:', j);
+    }catch(e){
+      const s = document.getElementById('tg_state');
+      if (s) s.textContent = '⚠️ 同步失敗（使用 URL 參數）';
+      console.warn('export fetch fail:', e);
+    }
+  }
+
+  // 呼叫同步
+  fetchLiveIfAny();
 })();
 </script>
+
 
 
 </body>
